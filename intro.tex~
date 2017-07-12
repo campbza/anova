@@ -1,0 +1,50 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\newtheorem{definition}{Definition}
+
+\title{Quick Introduction to Differential Privacy}
+\author{Zachary Campbell}
+\begin{document}
+\maketitle{}
+
+Differential privacy is a framework for minimizing the probability of 
+identifying records in an anonymized, statistical database. It is a promise 
+of a data holder to participants that they will not be affected, adversely or 
+otherwise, by allowing their data to be used in the database.
+\\
+\\
+We will think of databases $x$ as collections of records from a universe 
+$\mathcal{X}$. For convenience, we will represent databases by their 
+histograms $x\in \mathbb{N}^{|\mathcal{X}|}$, where each entry $x_i$ is the 
+number of elements in the database $x$ of type $i\in\mathcal{X}$. We will 
+now define a notion of distance between two databases $x$ and $y$.
+
+\begin{definition}{}
+The $l_1$ norm of a database $x$, denoted $||x||_1$, is defined to be:
+\[
+||x||_1 = \sum_{i=1}^{\mathcal{X}} |x_i|.
+\]
+The $l_1$ distance between two databases $x$ and $y$ is $||x-y||_1$.
+\end{definition}
+
+This captures what we want: $||x||_1$ is a measure of the size of a database 
+$x$ (the number of records it contains) and $||x-y||_1$ is a measure of how 
+many records differ between $x$ and $y$.
+
+\begin{definition}{}
+A randomized algorithm $\mathcal{M}$ with domain $\mathbb{N}^
+{|\mathcal{X}|}$ is $(\epsilon, \delta)$-differentially private if 
+for all $\mathcal{S}\subseteq \text{Range}(\mathcal{M})$ and for all $x,y
+\in\mathbb{N}^{|\mathcal{X}|}$ such that $||x-y||_1 \leq 1$:
+\[
+\text{Pr}[\mathcal{M}(x)\in \mathcal{S}] \leq \text{exp}(\epsilon)
+\text{Pr[\mathcal{M}(y)\in\mathcal{S}] + \delta,
+\]
+where the probability space is over the coin flips of the mechanism 
+$\mathcal{M}$. If $\delta = 0$, we say that $\mathcal{M}$ is $\epsilon$-
+differentially private.
+\end{definition}
+
+\end{document}
