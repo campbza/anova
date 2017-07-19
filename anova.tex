@@ -448,8 +448,8 @@ $\text{Lap}\left(\frac{\frac{1}{x_{k-1} + 1}+1}{\epsilon}\right)$.
 We can now use everything above to release the F-ratio. A user can first 
 query for noisy $\overline{y}$, noisy $\overline{y}_i$s, then use these 
 as input for the noisy $d$ and $g$ queries to get noisy SSE and SSA. 
-Then, they can query for noisy $k$ and $n$, which is easily done by adding 
-noise from $\text{Lap}(\frac{1}{\epsilon})$, as in Dwork[citation needed].
+We assume that $k$ and $n$ are public, which allows the analyst to compute $MSA$ and $MSE$, the 
+F-ratio, and thus the p-value.
 \end{subsection}
 
 \end{section}
