@@ -58,13 +58,13 @@ def SSA(xs,ys,m,e):
         return False
     else:
         n = len(xs)
-        m = min([len(xs[i]) fori in irange(n)])
+        l = min([xs[i] for i in range(n)])
         x = 0
         i = 0
         while i < n:
             x = x + xs[i]*((ys[i] - m)**2)
             i = i + 1
-        s = x + np.random.laplace(0.,((1/m)+1)/e)
+        s = x + np.random.laplace(0.,((1/l)+1)/e)
         return s
 
 def SSE(xs,ys,e):
