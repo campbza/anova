@@ -1,8 +1,4 @@
 env/
 *.pyc
 data/
-
-tests to run:
--laplacian
--vary epsilon 
-
+testresults.txt
