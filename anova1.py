@@ -15,18 +15,21 @@ def noisy_many_means(ys,e):
     xs = []
     while i < n:
         m = mean(ys[i])
-        l = len(ys[i])
-        xs.append(m + np.random.laplace(0.,1./(l*e)))
+        #l = len(ys[i])
+        xs.append(m + np.random.laplace(0.,1./e))
         i = i + 1
     return xs
 
-def noisy_mean_of_means(ys,e):
+def noisy_overall_mean(ys,e):
     n = len(ys)
-    i = 0
     xs = []
+    i = 0
     while i < n:
-        m = mean(ys[i])
-        xs.append(m)
+        l = len(ys[i])
+        j = 0
+        while j < l:
+            xs.append(ys[i][j])
+            j = j + 1
         i = i + 1
     x = mean(xs) + np.random.laplace(0.,2./((n - 1)*e))
     return x
@@ -87,3 +90,20 @@ def SSE(xs,ys,e):
             i = i + 1
         s = x + np.random.laplace(0.,1/e)
         return s
+
+def anova(data, epsilon, delta):
+    xs = []
+    for i in data:
+        xs.append(data[i])
+    means = noisy_many_means(xs, epsilon/4.0)
+    mean = noisy_overall_mean(xs, epsilon/4.0)
+    sizes = [len(xs[i]) for i in xs]
+    sse = SSE(xs,means,epsilon/4.0)
+    ssa = SSA(sizes,means,mean,epsilon/4.0)
+    size = sum(sizes)
+    dfe = sizes - len(xs)
+    dfa = len(xs) -1
+    mse = sse/dfe
+    msa = ssa/dfa
+    f = mse/msa
+    return f
