@@ -1,0 +1,9 @@
+
+
+\title{Differentially Private ANOVA}
+\author{Zachary Campbell}
+\maketitle
+
+The setting is that we have a dataset of $k$ groups, each populated with 
+an arbitrary number of individuals. The goal of ANOVA is to test if there 
+is a statistical difference between the means of these groups. 
