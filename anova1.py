@@ -97,11 +97,9 @@ def anova(data, epsilon, delta):
         xs.append(data[i])
     means = noisy_many_means(xs, epsilon/4.0)
     mean = noisy_overall_mean(xs, epsilon/4.0)
-    sizes = [len(xs[i]) for i in xs]
+    sizes = [len(xs[i]) for i in range(len(xs))]
     sse = SSE(xs,means,epsilon/4.0)
     ssa = SSA(sizes,means,mean,epsilon/4.0)
-    size = sum(sizes)
-    dfe = sizes - len(xs)
     dfa = len(xs) -1
     mse = sse/dfe
     msa = ssa/dfa

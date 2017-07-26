@@ -2,3 +2,4 @@ env/
 *.pyc
 data/
 testresults.txt
+anova_test_data.py
