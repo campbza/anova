@@ -29,7 +29,7 @@ k\}$, be a partition of $\mathcal{D}$ such that
 $\bigcup_{i=1}^k \mathcal{D}_i = \mathcal{D}$. We will denote entries 
 $y_{ij}$, which says that this is the $j$th entry in the $i$th group. Let 
 $x_i = |D_i|$, $y_{ij}\in [0,1]$, $\overline{y_i}$ the mean of $D_i$, and 
-$\overline{y}$ the mean of all $\overline{y_i}$ (the mean of means). We will 
+$\overline{y}$, the mean over all of the data. We will 
 not assume that every group has the same size. There are three important 
 quantities in the ANOVA framework:
 \[
@@ -105,8 +105,7 @@ m:\mathcal{D}\to\mathbb{R}
 as 
 
 \[
-m(\mathcal{D}) = \frac{1}{k} \sum_{i=1}^k \frac{1}{x_i} 
-  \sum_{j=1}^{x_i} y_{ij}.
+m(\mathcal{D}) = \frac{1}{n} \sum_{i=1}^{k} x_i \overline{y}_i
 \]
 
 We will analyze the global sensitivity of $m$. In the worst 

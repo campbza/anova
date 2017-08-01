@@ -91,7 +91,7 @@ def SSE(xs,ys,e):
         s = x + np.random.laplace(0.,1/e)
         return s
 
-def anova(data, epsilon, delta):
+def anova1(data, epsilon, delta):
     xs = []
     for i in data:
         xs.append(data[i])
