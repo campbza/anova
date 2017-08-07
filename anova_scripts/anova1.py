@@ -1,5 +1,15 @@
 import numpy as np
 
+def normalize(xs):
+    n = len(xs)
+    ys = [max(xs[i]) for i in range(n)]
+    maximum = max(ys)
+    zs = xs
+    for i in range(n):
+        for j in range(len(xs[i])):
+            zs[i][j] = xs[i][j]/float(maximum)
+    return zs
+
 def mean(xs):
     n = len(xs)
     x = 0

@@ -65,7 +65,7 @@ def SSE(xs, ys):
         s = x
         return s
 
-def anova3(data):
+def anova(data):
     xs = []
     for i in data:
         xs.append(data[i])
@@ -74,8 +74,8 @@ def anova3(data):
     mean = overall_mean(xs)
     sizes = [len(xs[i]) for i in range(len(xs))]
     total_size = sum(sizes)
-    sse = SSE(xs, group_means) + np.random.laplace(0.0, 3/(epsilon/2.0))
-    ssa = SSA(sizes, group_means, mean) + np.random.laplace(0.0, 3/(epsilon/2.0))
+    sse = SSE(xs, group_means)
+    ssa = SSA(sizes, group_means, mean)
     dfe = total_size - number_of_groups
     dfa = number_of_groups - 1
     mse = sse/dfe
