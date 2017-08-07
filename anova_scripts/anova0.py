@@ -1,3 +1,7 @@
+#################################
+#Framework for non-private ANOVA#
+#################################
+
 import numpy as np
 
 def mean(xs):

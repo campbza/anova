@@ -1,3 +1,7 @@
+########################################
+#A frame-work for naively private ANOVA#
+########################################
+
 import numpy as np
 
 def normalize(xs):

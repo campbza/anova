@@ -1,3 +1,7 @@
+#################################
+#ANOVA using a min-size estimate#
+#################################
+
 import numpy as np
 
 def min_size_est(data, epsilon, delta):

@@ -1,5 +1,9 @@
+################################################
+#ANOVA using overall sensitivity of SSA and SSE#
+################################################
+
 import numpy as np
-from anova1 import *
+
 
 def mean(xs):
     n = len(xs)
