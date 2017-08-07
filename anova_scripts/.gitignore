@@ -1,2 +1,5 @@
 *.py~
 *.pyc
+*.csv
+csv_to_dict.*
+test_data.*

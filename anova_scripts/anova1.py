@@ -105,17 +105,21 @@ def SSE(xs,ys,e):
         s = x + np.random.laplace(0.,1/e)
         return s
 
-def anova1(data, epsilon, delta):
+def anova1(data, epsilon):
     xs = []
     for i in data:
         xs.append(data[i])
+    xs = normalize(xs)
+    number_of_groups = len(xs)
     means = noisy_many_means(xs, epsilon/4.0)
     mean = noisy_overall_mean(xs, epsilon/4.0)
     sizes = [len(xs[i]) for i in range(len(xs))]
+    total_size = sum(sizes)
     sse = SSE(xs,means,epsilon/4.0)
     ssa = SSA(sizes,means,mean,epsilon/4.0)
-    dfa = len(xs) -1
+    dfa = number_of_groups -1
+    dfe = total_size - 1
     mse = sse/dfe
     msa = ssa/dfa
-    f = mse/msa
+    f = msa/mse
     return f
