@@ -45,7 +45,7 @@ def noisy_overall_mean(ys,e):
             xs.append(ys[i][j])
             j = j + 1
         i = i + 1
-    x = mean(xs) + np.random.laplace(0.,2./((n - 1)*e))
+    x = mean(xs) + np.random.laplace(0.,1./((n - 1)*e))
     return x
 
 #sum of squares formulas
