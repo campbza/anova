@@ -4,27 +4,16 @@
 
 import numpy as np
 from csv_to_datalist import *
-
-def mean(xs):
-#input: list of values
-#output: real-valued mean
-    n = len(xs)
-    x = 0
-    i = 0
-    while i < n:
-        x += xs[i]
-        i += 1
-    return float(x) / n
+from datagen import *
 
 def many_means(data):
-#input: data list
+#input: list of lists
 #output: mean of each list in the data
     l = len(data)
     xs = []
     i = 0
     while i < l:
-        m = mean(data[i])
-        xs.append(m)
+        xs.append(np.mean(data[i]))
         i += 1
     return xs
 
@@ -33,7 +22,7 @@ def overall_mean(data):
 #output: mean over all records in the data
     l = len(data)
     flat_list = [item for sublist in data for item in sublist] #list-of-lists to list
-    overall_mean = mean(flat_list)
+    overall_mean = np.mean(flat_list)
     return overall_mean
     
 
@@ -77,31 +66,52 @@ def SSE(data, epsilon):
         sse += np.random.laplace(0.0, 3.0/epsilon) # 3 is sensitivity of SSE
         return sse
 
-def fstar(n, dfa, dfe, noise):
+def fstar(n, dfa, dfe, mse, noise):
 #input: sample size, degrees of freedom, and amount of noise
 #output: n random variables drawn from chisquare with noise added
-    numerator = (np.random.chisquare(dfa, n) + noise)/(dfa)
-    denominator = (np.random.chisquare(dfe, n) + noise)/(dfe)
+    numerator = (mse*np.random.chisquare(dfa, n) + noise)/(dfa)
+    denominator = (mse*np.random.chisquare(dfe, n) + noise)/(dfe)
     return numerator/denominator
 
-def anova(data, epsilon):
-#input: normalized data list, epsilon (or None)
-#output: epsilon-differentially f-ratio, SSE and SSA
+def pval(f, n, dfa, dfe, mse, noise):
+    fstarsim = fstar(n, dfa, dfe, mse, noise)
+    return np.mean(fstarsim > f)
+
+def anova(data, epsilon, n):
+#input: normalized data list, epsilon (or None), number of runs n
+#output: epsilon-differentially private f-ratio, SSA, SSE, MSA, MSE in dictionary
     number_of_groups = len(data)
     total_size = sum([len(data[i]) for i in range(len(data))])
     dfa = number_of_groups - 1
     dfe = total_size - number_of_groups
+    fvals = []
+    ssavals = []
+    ssevals = []
+    msevals = []
     if epsilon == None:
         sse = SSE(data, None)
         ssa = SSA(data, None)
-        fstarsim = fstar(1000000, dfa, dfe, 0) #simulated distribution under zero noise 
+        msa = ssa / dfa
+        mse = sse / dfe
+        f = msa / mse
+        fvals.append(f)
+        ssavals.append(ssa)
+        ssevals.append(sse)
+        msevals.append(mse)
     else:
-        sse = SSE(data, epsilon / 2)
-        ssa = SSA(data, epsilon / 2)
-        fstarsim = fstar(1000000, dfa, dfe, np.random.laplace(0.0, 3.0/epsilon, 1000000)) #simulated distribution with nosie ~ Lap(3/epsilon)
-    msa = ssa / dfa
-    mse = sse / dfe
-    f = msa / mse
-    pval = mean(fstarsim > f) # amount of data in the sample distribution that is more extreme than what we witness
-    return f, ssa, sse, pval
+        i = 0
+        while i < n:
+            sse = SSE(data, epsilon / 2)
+            ssa = SSA(data, epsilon / 2)
+            msa = ssa / dfa
+            mse = sse / dfe
+            f = msa / mse
+            fvals.append(f)
+            ssavals.append(ssa)
+            ssevals.append(sse)
+            msevals.append(mse)
+            i += 1
+    return {'f':fvals, 'ssa':ssavals, 'sse':ssevals, 'mse':msevals}
 
+def error(actual, expected):
+    return (abs(actual - expected)/expected)*100

@@ -1,0 +1,24 @@
+comments:
+don't use n as variable for number of groups -- check
+where our constant 3 comes from -- check
+better ways to do overall_mean -- redo it -- check
+
+overall_mean sensitivty for naive line 55 -- check
+many_means for naive -- check 
+many_means -- only 1 while loop -- check
+
+
+more specific comment in data mangement script -- check
+double check dictreader handling quotes
+print raw data, compare to csv
+comment that this assumes header
+change dict to data
+make f more succinct -- maybe also return keys
+
+
+
+check state-by-state more thoroughly
+
+how much would sse and ssa have to change such that the p-value is not significant
+
+

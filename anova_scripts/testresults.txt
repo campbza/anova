@@ -1,0 +1,71 @@
+All tests done with 3 groups:
+--group 1 has range [0.0, 1.0]
+--group 2 has range [0.0, 0.9]
+--group 3 has range [0.0, 0.8]
+
+Full dataset tests (group sizes: 2000, 2500, 3000)
+
+--non-private anova yields f = 108.55
+
+Test 1 (epsilon = 1.0)
+--average private anova yields f = 109.89
+--error: 1.08 %
+
+Test 2 (epsilon = 0.5)
+--average private anova yields f = 111.72
+--error: 2.92 %
+
+Test 3 (epsilon = 0.1)
+--average private anova yields f = 123.24
+--error: 13.5 %
+
+
+Random sampling tests (groups sizes: 1500)
+
+--non-private anova yields f = 64.34
+
+Test 1 (epsilon = 1.0)
+--average private anova yields f = 63.33
+--error: 1.57 %
+
+Test 2 (epsilon = 0.5)
+--average private anova yields f = 62.75
+--error: 2.47 %
+
+Test 3 (epsilon = 0.1)
+--average private anova yields f = 68.24
+--error: 6.05 %
+
+
+Random sampling tests (group sizes: 1000)
+
+--non-private anova yields f = 39.24
+
+Test 1 (epsilon = 1.0)
+--average private anova yields f = 40.58
+--error: 3.41 %
+
+Test 2 (epsilon = 0.5)
+--average private anova yields f = 36.45
+--error: 7.11 %
+
+Test 3 (epsilon = 0.1)
+--average private anova yields f = 68.62
+--error: 74.87 %
+
+
+Random sampling tests (group sizes: 500
+
+--non-private anova yields 24.67
+
+Test 1 (epsilon = 1.0)
+--average private anova yields f = 25.57
+--error: 3.65 %
+
+Test 2 (epsilon = 0.5)
+--average private anova yields f = 21.48
+--error: 12.9 %
+
+Test 3 (epsilon = 0.1)
+--unusable
+
