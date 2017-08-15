@@ -101,6 +101,13 @@ def anova(data, epsilon, filename):
     with open(filename, 'a') as f:
         f.write(str(sse) + ',' + str(ssa) + ',' + str(epsilon) + ',' + str(pval) + '\n')
 
+def anova_test(num_runs, epsilon, filename, m1, m2, m3, var, num_per_group):
+    i = 0
+    while i < num_runs:
+        data = datagen(m1,m2,m3,var,num_per_group)
+        anova(data, epsilon, filename)
+        i += 1
+
 def anova1(data, epsilon):
 #input: normalized data(list of lists), epsilon
 #output: epsilon-differentially private p-value
