@@ -73,45 +73,54 @@ def fstar(n, dfa, dfe, mse, noise):
     denominator = (mse*np.random.chisquare(dfe, n) + noise)/(dfe)
     return numerator/denominator
 
-def pval(f, n, dfa, dfe, mse, noise):
-    fstarsim = fstar(n, dfa, dfe, mse, noise)
-    return np.mean(fstarsim > f)
+def error(actual, expected):
+    return (abs(actual - expected)/expected)*100
 
-def anova(data, epsilon, n):
-#input: normalized data list, epsilon (or None), number of runs n
-#output: epsilon-differentially private f-ratio, SSA, SSE, MSA, MSE in dictionary
+def anova(data, epsilon, filename):
+#input: normalized data (list of lists), epsilon, file to write to
+#ouput: epsilon-differentially private sse, ssa, and p-value added to file (along with epsilon)
     number_of_groups = len(data)
     total_size = sum([len(data[i]) for i in range(len(data))])
     dfa = number_of_groups - 1
     dfe = total_size - number_of_groups
-    fvals = []
-    ssavals = []
-    ssevals = []
-    msevals = []
     if epsilon == None:
         sse = SSE(data, None)
         ssa = SSA(data, None)
-        msa = ssa / dfa
-        mse = sse / dfe
-        f = msa / mse
-        fvals.append(f)
-        ssavals.append(ssa)
-        ssevals.append(sse)
-        msevals.append(mse)
     else:
-        i = 0
-        while i < n:
-            sse = SSE(data, epsilon / 2)
-            ssa = SSA(data, epsilon / 2)
-            msa = ssa / dfa
-            mse = sse / dfe
-            f = msa / mse
-            fvals.append(f)
-            ssavals.append(ssa)
-            ssevals.append(sse)
-            msevals.append(mse)
-            i += 1
-    return {'f':fvals, 'ssa':ssavals, 'sse':ssevals, 'mse':msevals}
+        sse = SSE(data, epsilon / 2)
+        ssa = SSA(data, epsilon / 2)
+    mse = sse / dfe
+    msa = ssa / dfa
+    f = msa / mse
+    if epsilon == None:
+        fstarsim = fstar(1000000, dfa, dfe, mse, 0)
+        pval = np.mean(fstarsim > f)
+    else:
+        fstarsim = fstar(1000000, dfa, dfe, mse, np.random.laplace(0.0, 3.0))
+        pval = np.mean(fstarsim > f)
+    with open(filename, 'a') as f:
+        f.write(str(sse) + ',' + str(ssa) + ',' + str(epsilon) + ',' + str(pval) + '\n')
 
-def error(actual, expected):
-    return (abs(actual - expected)/expected)*100
+def anova1(data, epsilon):
+#input: normalized data(list of lists), epsilon
+#output: epsilon-differentially private p-value
+    number_of_groups = len(data)
+    total_size = sum([len(data[i]) for i in range(len(data))])
+    dfa = number_of_groups - 1
+    dfe = total_size - number_of_groups
+    if epsilon == None:
+        sse = SSE(data, None)
+        ssa = SSA(data, None)
+    else:
+        sse = SSE(data, epsilon / 2)
+        ssa = SSA(data, epsilon / 2)
+    mse = sse / dfe
+    msa = ssa / dfa
+    f = msa / mse
+    if epsilon == None:
+        fstarsim = fstar(1000000, dfa, dfe, mse, 0)
+        pval = np.mean(fstarsim > f)
+    else:
+        fstarsim = fstar(1000000, dfa, dfe, mse, np.random.laplace(0.0, 3.0))
+        pval = np.mean(fstarsim > f)
+    return pval

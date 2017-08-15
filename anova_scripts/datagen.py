@@ -1,12 +1,18 @@
 import numpy as np
 
-def datagen(range1, range2, range3, n1, n2, n3):
-#input: ranges in the form [a,b] where a<b in (0,1), and 3 sample sizes for each generated list
-#output: datalist populated with 3 groups of data
-    data1 = [np.random.uniform(range1[0], range1[1]) for i in range(n1)]
-    data2 = [np.random.uniform(range2[0], range2[1]) for i in range(n2)]
-    data3 = [np.random.uniform(range3[0], range3[1]) for i in range(n3)]
+def datagen(m1, m2, m3, v, n):
+#input: 0.35, 0.5, 0.65, v = 0.15
+#output: 
+    data1 = np.array(np.random.normal(m1, v, n)).tolist()
+    data2 = np.array(np.random.normal(m2, v, n)).tolist()
+    data3 = np.array(np.random.normal(m3, v, n)).tolist()
     data = [data1, data2, data3]
+    for i in range(3):
+        for j in range(len(data)):
+            if data[i][j] > 1.0:
+                data[i][j] = 1.0
+            elif data[i][j] < 0.0:
+                data[i][j] = 0.0
     return data
 
 def sample(data, samplesize):

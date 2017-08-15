@@ -54,7 +54,7 @@ Test 3 (epsilon = 0.1)
 --error: 74.87 %
 
 
-Random sampling tests (group sizes: 500
+Random sampling tests (group sizes: 500)
 
 --non-private anova yields 24.67
 
