@@ -7,12 +7,18 @@ def datagen(m1, m2, m3, v, n):
     data2 = np.array(np.random.normal(m2, v, n)).tolist()
     data3 = np.array(np.random.normal(m3, v, n)).tolist()
     data = [data1, data2, data3]
-    for i in range(3):
-        for j in range(len(data)):
+    k = len(data)
+    i = 0
+    while i < k:
+        l = len(data[i])
+        j = 0
+        while j < l:
             if data[i][j] > 1.0:
                 data[i][j] = 1.0
             elif data[i][j] < 0.0:
                 data[i][j] = 0.0
+            j += 1
+        i += 1
     return data
 
 def sample(data, samplesize):

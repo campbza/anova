@@ -37,10 +37,8 @@ def pvals_significance(infile, threshold, outfile, title):
         if size not in sizes:
             sizes.append(size)
         epsilon = line[3]
-        if epsilon != 'None':
-            epsilon = float(epsilon)
-            if epsilon not in epsilons:
-                epsilons.append(epsilon)
+        if epsilon not in epsilons:
+            epsilons.append(epsilon)
         key = (size,epsilon)
         if key in pval_dict:
             pval_dict[key].append(float(line[4]))
@@ -52,8 +50,6 @@ def pvals_significance(infile, threshold, outfile, title):
         m = len(sig_pvals)
         pval_dict[item] = float(m) / float(l)
     sizes.sort()
-    epsilons.sort()
-    #epsilons.insert(0,'None')
     epsilon_dict = {}
     labels = []
     significance = []
@@ -62,12 +58,7 @@ def pvals_significance(infile, threshold, outfile, title):
     for s in sizes:
         for e in epsilons:
             epsilon_dict[e].append(pval_dict[(s,e)])
-            if e not in labels:
-                labels.append(e)
+            if epsilon_dict[e] not in significance:
                 significance.append(epsilon_dict[e])
-    plot_lines(sizes, labels, significance, outfile, threshold, title)
-    return
-
-
-
- 
+    plot_lines(sizes, epsilons, significance, outfile, threshold, title)
+    return 
