@@ -93,7 +93,7 @@ def anova(data, epsilon, filename):
     mse = sse / dfe
     msa = ssa / dfa
     f = msa / mse
-    fstarsim = fstar(1000000, dfa, dfe, mse, epsilon)
+    fstarsim = fstar(1000000, dfa, dfe, 0.0225, epsilon)
     pval = np.mean(fstarsim > f)
     with open(filename, 'a') as fout:
         fout.write(str(total_size) + ',' + str(sse) + ',' + str(ssa) + ',' + str(epsilon) + ',' + str(pval) + ',' + str(f) + '\n')
