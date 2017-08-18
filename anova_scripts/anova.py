@@ -66,15 +66,16 @@ def SSE(data, epsilon):
         sse += np.random.laplace(0.0, 3.0/epsilon) # 3 is sensitivity of SSE
         return sse
 
-def fstar(n, dfa, dfe, mse, noise):
+def fstar(n, dfa, dfe, mse, epsilon):
 #input: sample size, degrees of freedom, and amount of noise
 #output: n random variables drawn from chisquare with noise added
-    numerator = (mse*np.random.chisquare(dfa, n) + noise)/(dfa)
-    denominator = (mse*np.random.chisquare(dfe, n) + noise)/(dfe)
+    if epsilon == None:
+        numerator = (mse*np.random.chisquare(dfa, n) + np.random.laplace(0.0, 3.0/(epsilon/2.0), n))/(dfa)
+        denominator = (mse*np.random.chisquare(dfe, n) + np.random.laplace(0.0, 3.0/(epsilon/2.0), n))/(dfe)
+    else:
+        numerator = (mse*np.random.chisquare(dfa, n))/(dfa)
+        denominator = (mse*np.random.chisquare(dfe, n))/(dfe)
     return numerator/denominator
-
-def error(actual, expected):
-    return (abs(actual - expected)/expected)*100
 
 def anova(data, epsilon, filename):
 #input: normalized data (list of lists), epsilon, file to write to
@@ -96,17 +97,37 @@ def anova(data, epsilon, filename):
         fstarsim = fstar(1000000, dfa, dfe, mse, 0)
         pval = np.mean(fstarsim > f)
     else:
-        fstarsim = fstar(1000000, dfa, dfe, mse, np.random.laplace(0.0, 3.0))
+        fstarsim = fstar(1000000, dfa, dfe, mse, epsilon)
         pval = np.mean(fstarsim > f)
-    with open(filename, 'a') as f:
-        f.write(str(sse) + ',' + str(ssa) + ',' + str(epsilon) + ',' + str(pval) + '\n')
+    with open(filename, 'a') as fout:
+        fout.write(str(total_size) + ',' + str(sse) + ',' + str(ssa) + ',' + str(epsilon) + ',' + str(pval) + '\n')
 
-def anova_test(num_runs, epsilon, filename, m1, m2, m3, var, num_per_group):
+def anova_test(num_runs, epsilon_vals, filename, m1, m2, m3, var, group_counts):
     i = 0
-    while i < num_runs:
-        data = datagen(m1,m2,m3,var,num_per_group)
-        anova(data, epsilon, filename)
+    while i < len(epsilon_vals):
+        j = 0
+        while j < len(group_counts):
+            k = 0
+            while k < num_runs:
+                data = datagen(m1,m2,m3,var,group_counts[j])
+                anova(data, epsilon_vals[i], filename)
+                k += 1
+            j += 1
         i += 1
+    print('Wrote data to ' + filename)
+    return
+
+
+
+
+
+def significance(filename, threshold):
+    with open(filename, 'r') as f:
+        data = [float(row['pval']) for row in csv.DictReader(f)]
+        n = len(data)
+        sig_vals = [item for item in data if item < threshold]
+        m = len(sig_vals)
+        return float(m)/float(n)
 
 def anova1(data, epsilon):
 #input: normalized data(list of lists), epsilon
