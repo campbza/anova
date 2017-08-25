@@ -89,13 +89,14 @@ Our goal is to apply methods of differential privacy to a common query framework
 
 \begin{block}{Introduction}
 
-The objects of concern in this project are statistical databases. We will think of these specifically as databases populated with individuals'private, sensitive information (such as medical records, financial records, genome sequences, etc.). Differential privacy is a mathematical formulation within the field of database privacy that aims to allow queries on a statistical database, while offering strong privacy guarantees. That is, when one asks for quantitative information from a database (think mean, median, etc.), we want to gaurantee that this query will be executed in such a way that with high probability it does not leak any identifying information about individual records.
+
+The objects of concern in this project are statistical databases. We will think of these specifically as databases populated with individuals'private, sensitive information (such as medical records, financial records, genome sequences, etc.). Differential privacy is a mathematical formulation within the field of database privacy that aims to allow queries on a statistical database, while offering strong privacy guarantees. That is, when one asks for quantitative information from a database (think mean, median, etc.), we want to guarantee that this query will be executed in such a way that with high probability it does not leak any identifying information about individual records.
 
 \end{block}
 
 \begin{block}{Motivation}
 
-It has been shown many times that simple anonymization of database records is not sufficient to protect the privacy of individuals who populate a databse. Perhaps most famously, in \cite{narayanan2008robust}, researchers used anonymized and publicly available data released by Netflix, in addition to auxiliary databases, to identify specific users in the Netflix data. Similar attacks have shown effective on anonymized genetic data, leading to widespread data removal. The goal of differential privacy is to allow queries on these databases in such a way that privacy is gauranteed, no matter what auxiliary information an attacker might have. For another attack, see \cite{homer2008resolving}.
+It has been shown many times that simple anonymization of database records is not sufficient to protect the privacy of individuals who populate a databse. Perhaps most famously, in \cite{narayanan2008robust}, researchers used anonymized and publicly available data released by Netflix, in addition to auxiliary databases, to identify specific users in the Netflix data. Similar attacks have shown effective on anonymized genetic data, leading to widespread data removal. The goal of differential privacy is to allow queries on these databases in such a way that privacy is guaranteed, no matter what auxiliary information an attacker might have. For another attack, see \cite{homer2008resolving}.
 
 \end{block}
 
