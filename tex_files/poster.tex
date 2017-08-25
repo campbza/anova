@@ -45,7 +45,7 @@
 
 \title{Differentially Private ANOVA} % Poster title
 
-\author{Zachary Campbell, Adam Groce, Anna Ritz, and Andrew Bray} % Author(s)
+\author{Zachary Campbell, Andrew Bray, Anna Ritz, and Adam Groce} % Author(s)
 
 \institute{Reed College} % Institution(s)
 
@@ -73,12 +73,13 @@
 
 \begin{alertblock}{Objectives}
 
-Our goal is to apply methods of differential privacy to a common query framework used on biological and social-science databases. We set out to achieve the following:
+Our goal is to apply methods of differential privacy to a common query framework used on biological and social-science databases. 
+%We set out to achieve the following:
 
 \begin{itemize}
-\item To formalize ANOVA in a differentially-private manner
-\item Implement a differentially-private ANOVA algorithm 
-\item To evaluate the performance of our algorithm with varying privacy parameters 
+\item We formalize a differentially-private ANOVA % in a differentially-private manner
+\item We implement a differentially-private ANOVA algorithm 
+\item We evaluate the performance of our algorithm with varying privacy parameters 
 \end{itemize}
 
 \end{alertblock}
@@ -90,13 +91,15 @@ Our goal is to apply methods of differential privacy to a common query framework
 \begin{block}{Introduction \& Motivation}
 
 
-The objects of concern in this project are statistical databases. We will think of these specifically as databases populated with individuals' private, sensitive information (such as medical records, financial records, genome sequences, etc.). Differential privacy is a mathematical formulation within the field of database privacy that aims to allow queries on a statistical database, while offering strong privacy guarantees. That is, when one asks for quantitative information from a database (think mean, median, etc.), we want to guarantee that this query will be executed in such a way that with high probability it does not leak any identifying information about individual records.
-
+%The objects of concern in this project are statistical databases that contain %. We will think of these specifically as databases populated with 
+%individuals' private, sensitive information (such as medical and financial records, genome sequences, etc.). 
+Differential privacy is a mathematical formulation within the field of database privacy that aims to allow queries on a statistical database populated with sensitive information (such as medical and financial records, genome sequences, etc.), while offering strong privacy guarantees.
+%That is, when one asks for quantitative information from a database (think mean, median, etc.), we want to guarantee that this query will be executed in such a way that with high probability it does not leak any identifying information about individual records.
 %\end{block}
-
 %\begin{block}{Motivation}
-
-It has been shown many times that simple anonymization of database records is not sufficient to protect the privacy of individuals who populate a database. Perhaps most famously, in \cite{narayanan2008robust}, researchers used anonymized and publicly available data released by Netflix, in addition to auxiliary databases, to identify specific users in the Netflix data. Similar attacks have shown effective on anonymized genetic data, leading to widespread data removal. The goal of differential privacy is to allow queries on these databases in such a way that privacy is guaranteed, no matter what auxiliary information an attacker might have. For another attack, see \cite{homer2008resolving}.
+It has been shown many times that simple anonymization of database records is not sufficient to protect the privacy of individuals who populate a database. Perhaps most famously, in \cite{narayanan2008robust}, researchers used anonymized Netflix data along with other public databases %and publicly available data released by Netflix, in addition to auxiliary databases, 
+to identify specific users. %Similar attacks have shown effective on anonymized genetic data, leading to widespread data removal.
+ The goal of differential privacy is to allow queries on these databases in such a way that privacy is guaranteed, no matter what auxiliary information an attacker might have. For another attack, see \cite{homer2008resolving}.
 
 \end{block}
 
@@ -108,12 +111,11 @@ It has been shown many times that simple anonymization of database records is no
 
 In the following, let $x$ and $y$ be databases in the universe $\mathcal{X}$. We define the notation $||x-y||_1$ to be a measure of how many records differ between databases $x$ and $y$. We formally define differential privacy as follows:
 A randomized algorithm $\mathcal{M}$ with domain $\mathcal{X}$ is $\epsilon$-differentially private if for all $\mathcal{S}\subseteq \text{Range}(\mathcal{M})$ and for all $x,y \in\mathcal{X}$ such that $||x - y||_1 \leq 1$:
-
 \[
 \text{Pr}[\mathcal{M}(x) \in \mathcal{S}] \leq \exp(\epsilon) \text{Pr}[\mathcal{M}(y) \in \mathcal{S}].
 \]
 
-In general, privacy is acheived by injecting random noise into the data. For more information see \cite{dwork2014algorithmic}
+In general, privacy is acheived by injecting random noise into the data. For more information see \cite{dwork2014algorithmic}.
 
 %\begin{figure}
 %\includegraphics[width=1.0\linewidth]{diffpriv.png}
@@ -156,7 +158,8 @@ There are two important measures in the ANOVA framework that we will use:
 \text{SSE} = \sum_{i=1}^{k} \sum_{j=1}^{x_i} (y_{ij} - \overline{y}_i)^2.
 \]
 
-{\color{red}{SENTENCES HERE ABOUT MSA, MSE AND F}}
+We divide SSE and SSA by the degrees of freedom to obtain MSE and SSE, respectively. 
+We use these values to compute the ratio MSA/MSE, also known as the $F$-ratio. 
 
 \end{block}
 %---------------------------------------------------------------------------------------
@@ -204,7 +207,7 @@ differential privacy. The idea is, given a query $f:\mathcal{D}\to\mathbb{R}^{k}
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
-
+\vspace{-.5in}
 \begin{block}{Results}
 
 Our results indicate that one can carry out an ANOVA test on reasonable database sizes with 
@@ -212,7 +215,7 @@ reasonable privacy guarantees.
 
 \begin{center}
 \begin{figure}
-\includegraphics[width=.85\linewidth]{varest1000_1.png}
+\includegraphics[width=.81\linewidth]{varest1000_1.png}
 %\caption{Differentially-private ANOVA with varying database sizes and epsilon values.}
 \end{figure}
 \end{center}
