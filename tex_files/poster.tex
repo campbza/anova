@@ -1,12 +1,16 @@
 \documentclass[final]{beamer}
 
+\usepackage{amsthm}
+\usepackage{algorithmic,algorithm}
+
+
 \usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
 
 \setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
 \setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
-\setbeamercolor{block alerted title}{fg=white,bg=dblue!70} % Colors of the highlighted block titles
+\setbeamercolor{block alerted title}{fg=black,bg=dblue!70} % Colors of the highlighted block titles
 \setbeamercolor{block alerted body}{fg=black,bg=dblue!10} % Colors of the body of highlighted blocks
 % Many more colors are available for use in beamerthemeconfposter.sty
 
@@ -39,9 +43,9 @@
 %	TITLE SECTION 
 %----------------------------------------------------------------------------------------
 
-\title{Differential Privacy} % Poster title
+\title{Differentially Private ANOVA} % Poster title
 
-\author{Zachary Campbell, Adam Groce, and Anna Ritz} % Author(s)
+\author{Zachary Campbell, Adam Groce, Anna Ritz, and Andrew Bray} % Author(s)
 
 \institute{Reed College} % Institution(s)
 
@@ -69,45 +73,32 @@
 
 \begin{alertblock}{Objectives}
 
-Our goal is to apply methods of differential privacy - a mathematical subfield 
-of cryptography - to a common query framework on biological and social 
-science databases. More specifically, we set out to acheive the following:
+Our goal is to apply methods of differential privacy to a common query framework used on biological and social-science databases. We set out to acheive the following:
+
 \begin{itemize}
-\item  
-\item 
-\item   
-\item
+\item To formalize ANOVA in a differentially-private manner
+\item Implement a differentially-private ANOVA algorithm 
+\item To evaluate the performance of our algorithm with varying privacy parameters 
 \end{itemize}
 
 \end{alertblock}
 
 %----------------------------------------------------------------------------------------
-%	INTRODUCTION
+%	INTRODUCTION & MOTIVATION
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Introduction}
 
-The objects of concern in this project are statistical databases. We will 
-think of these specifically as datasets that are populated with private, 
-sensitive information (such as medical records, financial records, genome 
-sequences, or other potentially personally-identifying information). Moreover, 
-these datasets will be ones that can provide statistical information about 
-the records they contain. Differential privacy is a mathematical formulation 
-within the field of database privacy that aims to allow queries on a 
-statistical database, while maintaining the privacy of individual records. 
-That is, when one asks for quantitative information from a database (think 
-mean, median, etc.), we want to gaurantee that this query will be executed 
-in such a way that with high probability it does not leak any identifying 
-information about individual records. 
+The objects of concern in this project are statistical databases. We will think of these specifically as databases populated with individuals'private, sensitive information (such as medical records, financial records, genome sequences, etc.). Differential privacy is a mathematical formulation within the field of database privacy that aims to allow queries on a statistical database, while offering strong privacy guarantees. That is, when one asks for quantitative information from a database (think mean, median, etc.), we want to gaurantee that this query will be executed in such a way that with high probability it does not leak any identifying information about individual records.
 
 \end{block}
 
-%------------------------------------------------
+\begin{block}{Motivation}
 
-\begin{figure}
-\includegraphics[width=0.8\linewidth]{placeholder.jpg}
-\caption{Figure caption}
-\end{figure}
+It has been shown many times that simple anonymization of database records is not sufficient to protect the privacy of individuals who populate a databse. Perhaps most famously, in \cite{narayanan2008robust}, researchers used anonymized and publicly available data released by Netflix, in addition to auxiliary databases, to identify specific users in the Netflix data. Similar attacks have shown effective on anonymized genetic data, leading to widespread data removal. The goal of differential privacy is to allow queries on these databases in such a way that privacy is gauranteed, no matter what auxiliary information an attacker might have. For another attack, see \cite{homer2008resolving}.
+
+\end{block}
+
 
 %----------------------------------------------------------------------------------------
 
@@ -122,28 +113,24 @@ information about individual records.
 \begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
 %----------------------------------------------------------------------------------------
-%	MATERIALS
+%	Differential Privacy
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Materials}
+\begin{block}{Differential Privacy}
 
-The following materials were required to complete the research:
+In the following, let $x$ and $y$ be databases in the universe $\mathcal{X}$. We define the notation $||x-y||_1$ to be a measure of how many records differ between databases $x$ and $y$. We formally define differential privacy as follows:
+A randomized algorithm $\mathcal{M}$ with domain $\mathcal{X}$ is $\epsilon$-differentially private if for all $\mathcal{S}\subseteq \text{Range}(\mathcal{M})$ and for all $x,y \in\mathcal{X}$ such that $||x - y||_1 \leq 1$:
 
-\begin{itemize}
-\item Curabitur pellentesque dignissim
-\item Eu facilisis est tempus quis
-\item Duis porta consequat lorem
-\item Eu facilisis est tempus quis
-\end{itemize}
+\[
+\text{Pr}[\mathcal{M}(x) \in \mathcal{S}] \leq \exp(\epsilon) \text{Pr}[\mathcal{M}(y) \in \mathcal{S}].
+\]
 
-The materials were prepared according to the steps outlined below:
 
-\begin{enumerate}
-\item Curabitur pellentesque dignissim
-\item Eu facilisis est tempus quis
-\item Duis porta consequat lorem
-\item Curabitur pellentesque dignissim
-\end{enumerate}
+\begin{figure}
+\includegraphics[width=1.0\linewidth]{diffpriv.png}
+\caption{In general, privacy is acheived by injecting random noise into the data. For more information 
+	see \cite{dwork2014algorithmic}}
+\end{figure}
 
 \end{block}
 
@@ -154,12 +141,19 @@ The materials were prepared according to the steps outlined below:
 \begin{column}{\onecolwid}\vspace{-.6in} % The second column within column 2 (column 2.2)
 
 %----------------------------------------------------------------------------------------
-%	METHODS
+%	OUR ALGORITHM
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Methods}
+\begin{block}{Our algorithm}
+Our algorithm uses a technique called the Laplace mechanism, which is a powerful primitive in 
+differential privacy. The idea is, given a query $f:\mathcal{D}\to\mathbb{R}^{k}$, we first analyze the sensitivity of $f$, denoted $\Delta f$. Intuitively, the sensitivity captures how much the output of our function can change for a change of input in a specified range. Using this sensitivity, we then draw noise from the Laplace distribution $\text{Lap}(\Delta f / \epsilon)$.
 
-Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed laoreet accumsan mattis. Integer sapien tellus, auctor ac blandit eget, sollicitudin vitae lorem. Praesent dictum tempor pulvinar. Suspendisse potenti. Sed tincidunt varius ipsum, et porta nulla suscipit et. Etiam congue bibendum felis, ac dictum augue cursus a. \textbf{Donec} magna eros, iaculis sit amet placerat quis, laoreet id est. In ut orci purus, interdum ornare nibh. Pellentesque pulvinar, nibh ac malesuada accumsan, urna nunc convallis tortor, ac vehicula nulla tellus eget nulla. Nullam lectus tortor, \textit{consequat tempor hendrerit} quis, vestibulum in diam. Maecenas sed diam augue.
+\begin{figure}
+\includegraphics[width=1.0\linewidth]{algorithm.png}
+\caption{Our algorithm, which adds Laplacian noise based on the provable sensitivity of 
+	general sum-of-squares formulas, and returns a differentially-private $p$-value.}
+\end{figure}
+
 
 \end{block}
 
@@ -170,50 +164,33 @@ Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed laoreet ac
 \end{columns} % End of the split of column 2 - any content after this will now take up 2 columns width
 
 %----------------------------------------------------------------------------------------
-%	IMPORTANT RESULT
-%----------------------------------------------------------------------------------------
-
-\begin{alertblock}{Important Result}
-
-Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed commodo molestie porta. Sed ultrices scelerisque sapien ac commodo. Donec ut volutpat elit.
-
-\end{alertblock} 
-
-%----------------------------------------------------------------------------------------
 
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
 
 \begin{column}{\onecolwid} % The first column within column 2 (column 2.1)
 
 %----------------------------------------------------------------------------------------
-%	MATHEMATICAL SECTION
+%	ANOVA
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Mathematical Section}
+\begin{block}{ANOVA}
 
-Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin. Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin.
-  
-\begin{equation}
-E = mc^{2}
-\label{eqn:Einstein}
-\end{equation}
-
-Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin. Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin.
-
-\begin{equation}
-\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
-\label{eq:refname}
-\end{equation}
-
-Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin. Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin.
-
-\begin{equation}
-\kappa =\frac{\xi}{E_{\mathrm{max}}} %\mathbb{ZNR}
-\end{equation}
+The setting is that we have a dataset that can be partitioned into $k$ disjoint groups of 
+individuals, based on some categorical predictor variable. The goal of an analysis of variance, or ANOVA, is to test if there is astatistical difference between the means of these groups. 
+We now define the specifics of an ANOVA test.
+Let $\textbf{D}$ be our database, and let $\{D_i \; |\; 1\leq i\leq k \}$ be a partition of 
+$\textbf{D}$, where each $D_i$ is what we think of as a ``group.'' We denote the $j$th entry of group $i$ by $y_{ij}$, the mean of group $i$ by $\overline{y}_i$, and the mean of the entire 
+database by $\overline{y}$. Also, let $x_i = |D_i|$. 
+There are two important measures in the ANOVA framework that we will use:
+\[
+\text{SSA} = \sum_{i=1}^{k} x_i(\overline{y}_i - \overline{y})^2,
+\]
+\[
+\text{SSE} = \sum_{i=1}^{k} \sum_{j=1}^{x_i} (y_{ij} - \overline{y}_i)^2.
+\]
 
 \end{block}
-
-%----------------------------------------------------------------------------------------
+%---------------------------------------------------------------------------------------
 
 \end{column} % End of column 2.1
 
@@ -225,26 +202,13 @@ Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sol
 
 \begin{block}{Results}
 
+Our results indicate that one can carry out an ANOVA test on reasonable database sizes with 
+reasonable privacy guarantees. 
+
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{placeholder.jpg}
-\caption{Figure caption}
+\includegraphics[width=1.0\linewidth]{varest1000_1.png}
+\caption{Differentially-private ANOVA with varying database sizes and epsilon values.}
 \end{figure}
-
-Nunc tempus venenatis facilisis. Curabitur suscipit consequat eros non porttitor. Sed a massa dolor, id ornare enim:
-
-\begin{table}
-\vspace{2ex}
-\begin{tabular}{l l l}
-\toprule
-\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-\midrule
-Treatment 1 & 0.0003262 & 0.562 \\
-Treatment 2 & 0.0015681 & 0.910 \\
-Treatment 3 & 0.0009271 & 0.296 \\
-\bottomrule
-\end{tabular}
-\caption{Table caption}
-\end{table}
 
 \end{block}
 
@@ -266,22 +230,24 @@ Treatment 3 & 0.0009271 & 0.296 \\
 
 \begin{block}{Conclusion}
 
-Nunc tempus venenatis facilisis. \textbf{Curabitur suscipit} consequat eros non porttitor. Sed a massa dolor, id ornare enim. Fusce quis massa dictum tortor \textbf{tincidunt mattis}. Donec quam est, lobortis quis pretium at, laoreet scelerisque lacus. Nam quis odio enim, in molestie libero. Vivamus cursus mi at \textit{nulla elementum sollicitudin}.
+We show that for reasonable database sizes, one can execute differentially-private ANOVA 
+tests with reasonable privacy gaurantees, without significant loss in accuracy. Of course,
+the model is not as accurate as when using non-private ANOVA, but that is the trade-off. As 
+database size increases, the output of the differentially-private algorithm converges to 
+the output of the non-private algorithm. Ultimately, we have shown that differentially-private ANOVA maintains strong utility.
 
 \end{block}
 
 %----------------------------------------------------------------------------------------
-%	ADDITIONAL INFORMATION
+%	FURTHER WORK
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Additional Information}
+\begin{block}{Further Work}
 
-Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius dictum. 
-\begin{itemize}
-\item Curabitur pellentesque dignissim
-\item Eu facilisis est tempus quis
-\item Duis porta consequat lorem
-\end{itemize}
+This project is only a small step into what is a very large area for exploration. There are 
+certainly ways to get tighter bounds on the sensitivity of the sum-of-squares measurements, 
+which would improve accuracy. We did make some attempt at implementing more complicated 
+methods, but they require further work.
 
 \end{block}
 
@@ -291,46 +257,10 @@ Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius 
 
 \begin{block}{References}
 
-\nocite{*} % Insert publications even if they are not cited in the poster
-\small{\bibliographystyle{unsrt}
-\bibliography{sample}\vspace{0.75in}}
+\bibliographystyle{unsrt}
+\bibliography{sample}
 
 \end{block}
-
-%----------------------------------------------------------------------------------------
-%	ACKNOWLEDGEMENTS
-%----------------------------------------------------------------------------------------
-
-\setbeamercolor{block title}{fg=red,bg=white} % Change the block title color
-
-\begin{block}{Acknowledgements}
-
-\small{\rmfamily{Nam mollis tristique neque eu luctus. Suspendisse rutrum congue nisi sed convallis. Aenean id neque dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.}} \\
-
-\end{block}
-
-%----------------------------------------------------------------------------------------
-%	CONTACT INFORMATION
-%----------------------------------------------------------------------------------------
-
-\setbeamercolor{block alerted title}{fg=black,bg=norange} % Change the alert block title colors
-\setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
-
-\begin{alertblock}{Contact Information}
-
-\begin{itemize}
-\item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
-\item Email: \href{mailto:john@smith.com}{john@smith.com}
-\item Phone: +1 (000) 111 1111
-\end{itemize}
-
-\end{alertblock}
-
-\begin{center}
-\begin{tabular}{ccc}
-\includegraphics[width=0.4\linewidth]{logo.png} & \hfill & \includegraphics[width=0.4\linewidth]{logo.png}
-\end{tabular}
-\end{center}
 
 %----------------------------------------------------------------------------------------
 
@@ -340,4 +270,7 @@ Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius 
 
 \end{frame} % End of the enclosing frame
 
+
+
 \end{document}
+

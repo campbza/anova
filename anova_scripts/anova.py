@@ -67,7 +67,7 @@ def SSE(data, epsilon):
         return sse
 
 def fstar(n, dfa, dfe, mse, epsilon):
-#input: sample size, degrees of freedom, and amount of noise
+#input: sample size, degrees of freedom, mse, and epsilon
 #output: n random variables drawn from chisquare with noise added
     if epsilon != None:
         numerator = (mse*np.random.chisquare(dfa, n) + np.random.laplace(0.0, 3.0/(epsilon/2.0), n))/(dfa)

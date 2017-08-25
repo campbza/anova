@@ -67,7 +67,7 @@ def SSE(data, epsilon):
         return sse
 
 def fstar(n, dfa, dfe, mse, epsilon):
-#input: sample size, degrees of freedom, and amount of noise
+#input: sample size, degrees of freedom, mse, and epsilon
 #output: n random variables drawn from chisquare with noise added
     if epsilon != None:
         numerator = (mse*np.random.chisquare(dfa, n) + np.random.laplace(0.0, 3.0/(epsilon/2.0), n))/(dfa)
@@ -93,7 +93,7 @@ def anova(data, epsilon, filename):
     mse = sse / dfe
     msa = ssa / dfa
     f = msa / mse
-    fstarsim = fstar(1000000, dfa, dfe, 0.0225, epsilon)
+    fstarsim = fstar(1000000, dfa, dfe, mse, epsilon)
     pval = np.mean(fstarsim > f)
     with open(filename, 'a') as fout:
         fout.write(str(total_size) + ',' + str(sse) + ',' + str(ssa) + ',' + str(epsilon) + ',' + str(pval) + ',' + str(f) + '\n')
@@ -105,7 +105,7 @@ def anova_test(num_runs, epsilon_vals, filename, m1, m2, m3, var, group_counts):
         while j < len(group_counts):
             k = 0
             while k < num_runs:
-                data = datagen(m1,m2,m3,var,group_counts[j])
+                data = datagen(m1,m2,m3,0.0225,group_counts[j])
                 anova(data, epsilon_vals[i], filename)
                 k += 1
             j += 1

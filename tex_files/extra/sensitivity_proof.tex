@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{enumerate, enumitem}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+
+\begin{document}
+\title{Sensitivity Proofs}
+\author{Zachary Campbell}
+
+\maketitle
+
+\begin{theorem}{}
+	The sensitivity of 
+	\[
+		SSE = \sum_{i=1}^{k} \sum_{j=1}^{x_i} (y_{ij} - \overline{y}_i) ^ 2
+	\]
+	is bounded above by 3.
+\end{theorem}
+
+\begin{proof}{}
+	We take $y_{ij}\in [0,1]$. This means that changing row $ij$ to $i^{'}j$ changes $y_{ij}$ 
+	by at most $1$. This means that $\overline{y}_i$ can change by at most $1/x_i$, and 
+	$\overline{y}_{i^{'}}$ can change by at most $1/(x_{i^{'}} + 1)$.
+\end{proof}
+
+\begin{theorem}{}
+	The sensitivity
+\end{theorem}
+
+\end{document}

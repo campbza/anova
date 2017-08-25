@@ -9,7 +9,7 @@ def plot_lines(sizes, eps_vals, significance, outfile, threshold, title):
         labels[i] = 'epsilon = ' + str(labels[i])
     colors = ['r','g','b','y','m','c','k']
     shapes = ['o','s','d','^','x','<','v']
-    fig=plt.figure(figsize=(20,20))
+    fig=plt.figure(figsize=(8,5))
     ax=plt.subplot(1,1,1)
     for i in range(len(y_vals)):
         style_code = '-'+colors[i]+shapes[i]
