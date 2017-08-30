@@ -4,7 +4,6 @@
 
 ##ARCOMMENT is Anna's comments
 
-
 import numpy as np
 from csv_to_datalist import *
 from datagen import *
@@ -86,11 +85,15 @@ def fstar(n, dfa, dfe, mse, epsilon, total_size):
 def anova(data, epsilon, fout, variance):
 #input: normalized data (list of lists), epsilon, file to write to, variance (None to use estimate or a number to use if real.)
 # writes values to file
-#ouput: True if p-value = 0, False otherwise
+#ARCOMMENT: [new]the function returns a boolean value: True if p-value <0.05, False otherwise.
+# This output is used to count how many significant p-values we have in anova_test() function.
+
     number_of_groups = len(data)
     total_size = sum([len(data[i]) for i in range(len(data))])
     dfa = number_of_groups - 1
     dfe = total_size - number_of_groups
+
+    ## Calculate SSE,SSA,MSE,MSA, and F
     if epsilon == None:
         sse = SSE(data, None)
         ssa = SSA(data, None,total_size)
@@ -100,12 +103,21 @@ def anova(data, epsilon, fout, variance):
     mse = sse / dfe
     msa = ssa / dfa
     f = msa / mse
+
+    ## Generate null distribution.  Checks the variance input variable to see if we
+    ## should use the real variance or MSE as the estimate of variance.
+    ## NOTE: now 100K samples instead of 1 million
     if variance != None: ## use the value of variance passed as input
         fstarsim = fstar(100000, dfa, dfe, variance, epsilon, total_size)
-    else: # use the estimate (MSE) as input.
+    else: # use the estimate (MSE) as variance.
         fstarsim = fstar(100000, dfa, dfe, mse, epsilon, total_size)
+
+    ## Determine the proportion of samples that are greater than the f-ratio.
     pval = np.mean(fstarsim > f)
+
+    ## write a line to the outfile.
     fout.write(str(total_size) + ',' + str(sse) + ',' + str(ssa) + ',' + str(epsilon) + ',' + str(pval) + ',' + str(f) + '\n')
+    
     if pval < 0.05: ## ARCOMMMENT hard-coded the p-value here
         return True
     return False
@@ -128,7 +140,7 @@ def anova_test(num_runs, epsilon_vals, filename, means_list, stddev, group_count
                 data = datagen(means_list,stddev,group_counts[j])
                 ## IF/ELSE handles whether we pass in the real variance
                 if realvar:
-                    issig = anova(data, epsilon_vals[i], fout, stddev**2) #ARCOMMENT pass file handle rather than filename
+                    issig = anova(data, epsilon_vals[i], fout, stddev**2) 
                 else:
                     issig = anova(data, epsilon_vals[i], fout, None) 
                 if issig:
@@ -164,8 +176,9 @@ if __name__ == '__main__':
         m2 = 0.5
         m3 = 0.65
         stddev = 0.15
-        filename = 'ARtest_estimate_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
-            (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
+        filename = 'tmp.csv'
+        #filename = 'ARtest_estimate_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
+        #    (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
         anova_test(num_runs,epsilon_vals,filename,[m1,m2,m3],stddev,group_counts,realvar=False)
     elif experiment == 'realvar':
         m1 = 0.35

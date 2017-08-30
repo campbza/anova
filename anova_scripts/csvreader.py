@@ -30,7 +30,7 @@ def plot_lines(sizes, eps_vals, significance, outfile, threshold, title):
 def plot_lines_allow_truncated(x_vals,y_vals,labels, outfile, threshold, title):
     for i in range(len(labels)):
         if labels[i] == 'None':
-            labels[i] = 'No privacy.'
+            labels[i] = 'epsilon = $\infty$'
         else:
             labels[i] = 'epsilon = ' + str(labels[i])
     colors = ['r','g','b','y','m','c','k']
