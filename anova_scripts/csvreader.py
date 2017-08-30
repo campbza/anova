@@ -1,5 +1,6 @@
 import csv
 import matplotlib.pyplot as plt
+import sys
 
 def plot_lines(sizes, eps_vals, significance, outfile, threshold, title):
     x_vals = sizes
@@ -44,7 +45,7 @@ def plot_lines_allow_truncated(x_vals,y_vals,labels, outfile, threshold, title):
     plt.title(title)
     plt.xlabel('Database size (log scale)')
     plt.ylabel('Percent significance at ' + str(threshold))
-    plt.legend(loc='lower right')
+    plt.legend(loc='best')
 
     plt.tight_layout()
     plt.savefig(outfile)
@@ -100,8 +101,12 @@ def pvals_significance_allow_truncated_lines(infile, outfile, graphtitle, thresh
     reader = csv.reader(file_contents)
     epsilon_dict = {} # dictionary of (epsilon_val: size_dictionary) pairs, where each value is (size,pval_list).
     for line in reader:
+        if len(line)<5: # line is truncated; skip
+            continue
         size = int(line[0])
         epsilon = line[3]
+        if epsilon != 'None':
+            epsilon = float(epsilon)
         pval = float(line[4])
         if epsilon not in epsilon_dict:
             epsilon_dict[epsilon] = {}
@@ -111,17 +116,28 @@ def pvals_significance_allow_truncated_lines(infile, outfile, graphtitle, thresh
     for epsilon in epsilon_dict:
         for size in epsilon_dict[epsilon]:
             num_runs = len(epsilon_dict[epsilon][size])
-            epsilon_dict[epsilon][size] = sum([x for x in epsilon_dict[epsilon][size] if x < threshold])/float(num_runs)
+            epsilon_dict[epsilon][size] = sum([1 for x in epsilon_dict[epsilon][size] if x < threshold])/float(num_runs)
+
+    # sort epsilons
+    epsilon_keys = epsilon_dict.keys()
+    if 'None' in epsilon_keys:
+            extra = ['None']
+    else:
+        extra = []
+    to_sort = [s for s in epsilon_keys if s != 'None']
+    to_sort.sort(reverse=True)
+    epsilon_keys = extra + [s for s in to_sort]
+    print(epsilon_keys)
 
     x_vals = []
     y_vals = []
     labels = []
-    for epsilon in epsilon_dict:
+    for epsilon in epsilon_keys:
         sizes = [key for key in epsilon_dict[epsilon].keys()]
         sizes.sort()
 
         values = [epsilon_dict[epsilon][size] for size in sizes]
-        print(epsilon)
+        print('EPSILON',epsilon)
         for i in range(len(sizes)):
             print(sizes[i],values[i])
         x_vals.append(sizes)
@@ -134,12 +150,12 @@ def pvals_significance_allow_truncated_lines(infile, outfile, graphtitle, thresh
 ##ARCOMMENT
 import sys
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print('ERROR! <input.csv> and <output.png> expected.')
+    if len(sys.argv) != 4:
+        print('ERROR! <input.csv> <output.png> <graph_title> expected.')
         sys.exit()
     inputfile = sys.argv[1]
     outputfile = sys.argv[2]
+    graphtitle = sys.argv[3]
     threshold = 0.05
-    graphtitle = inputfile
     pvals_significance_allow_truncated_lines(inputfile,outputfile,graphtitle,threshold)
 
