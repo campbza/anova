@@ -64,3 +64,15 @@ def pvals_significance(infile, outfile, graphtitle, threshold):
                 significance.append(epsilon_dict[e])
     plot_lines(sizes, epsilons, significance, outfile, threshold, graphtitle)
     return 
+
+##ARCOMMENT
+import sys
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print('ERROR! <input.csv> and <output.png> expected.')
+        sys.exit()
+    inputfile = sys.argv[1]
+    outputfile = sys.argv[2]
+    threshold = 0.05
+    graphtitle = inputfile
+    pvals_significance(inputfile,outputfile,graphtitle,threshold)
