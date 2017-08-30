@@ -110,7 +110,7 @@ def anova(data, epsilon, fout, variance):
         return True
     return False
 
-def anova_test(num_runs, epsilon_vals, filename, m1, m2, m3, stddev, group_counts,realvar):
+def anova_test(num_runs, epsilon_vals, filename, means_list, stddev, group_counts,realvar):
     fout = open(filename, 'w') #ARCOMMENT open filename
     i = 0
     
@@ -125,7 +125,7 @@ def anova_test(num_runs, epsilon_vals, filename, m1, m2, m3, stddev, group_count
             while k < num_runs:
                 if k % 20 == 0:
                     print('  run %d of %d' % (k,num_runs))
-                data = datagen(m1,m2,m3,stddev,group_counts[j])
+                data = datagen(means_list,stddev,group_counts[j])
                 ## IF/ELSE handles whether we pass in the real variance
                 if realvar:
                     issig = anova(data, epsilon_vals[i], fout, stddev**2) #ARCOMMENT pass file handle rather than filename
@@ -166,7 +166,7 @@ if __name__ == '__main__':
         stddev = 0.15
         filename = 'ARtest_estimate_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
             (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
-        anova_test(num_runs,epsilon_vals,filename,m1,m2,m3,stddev,group_counts,realvar=False)
+        anova_test(num_runs,epsilon_vals,filename,[m1,m2,m3],stddev,group_counts,realvar=False)
     elif experiment == 'realvar':
         m1 = 0.35
         m2 = 0.5
@@ -174,13 +174,11 @@ if __name__ == '__main__':
         stddev = 0.15
         filename = 'ARtest_realvar_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
             (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
-        anova_test(num_runs,epsilon_vals,filename,m1,m2,m3,stddev,group_counts,realvar=True)
+        anova_test(num_runs,epsilon_vals,filename,[m1,m2,m3],stddev,group_counts,realvar=True)
     elif experiment == 'noisy':
-        m1 = 0.35
-        m2 = 0.5
-        m3 = 0.65
-        stddev = 0.15
-        filename = 'ARtest_noisy_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
-            (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
-        anova_test(num_runs,epsilon_vals,filename,m1,m2,m3,stddev,group_counts,realvar=False)
+        means_list = [0.5,0.5,0.5,0.6,0.4,0.43]
+        stddev = 0.2
+        filename = 'ARtest_noisy_%druns_%dmeans_%.2fvar_%depsilons_%dcounts.csv' % \
+            (num_runs,len(means_list),stddev,len(epsilon_vals),len(group_counts))
+        anova_test(num_runs,epsilon_vals,filename,means_list,stddev,group_counts,realvar=False)
 

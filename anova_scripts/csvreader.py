@@ -26,6 +26,31 @@ def plot_lines(sizes, eps_vals, significance, outfile, threshold, title):
     print('Wrote to ' + outfile)
     return
 
+def plot_lines_allow_truncated(x_vals,y_vals,labels, outfile, threshold, title):
+    for i in range(len(labels)):
+        if labels[i] == 'None':
+            labels[i] = 'No privacy.'
+        else:
+            labels[i] = 'epsilon = ' + str(labels[i])
+    colors = ['r','g','b','y','m','c','k']
+    shapes = ['o','s','d','^','x','<','v']
+    fig=plt.figure(figsize=(8,5))
+    ax=plt.subplot(1,1,1)
+    for i in range(len(y_vals)):
+        style_code = '-'+colors[i]+shapes[i]
+        ax.plot(x_vals[i],y_vals[i],style_code,label=labels[i],lw=2,ms=8)
+    ax.set_xscale('log')
+    ax.set_xlim([0,max([max(x) for x in x_vals]) + 1])
+    plt.title(title)
+    plt.xlabel('Database size (log scale)')
+    plt.ylabel('Percent significance at ' + str(threshold))
+    plt.legend(loc='lower right')
+
+    plt.tight_layout()
+    plt.savefig(outfile)
+    print('Wrote to ' + outfile)
+    return
+
 def pvals_significance(infile, outfile, graphtitle, threshold):
 #input: csv file, outfile name (.png), graphtitle, and threshold for significant pvals
 #output: graph of infile data
@@ -68,6 +93,44 @@ def pvals_significance(infile, outfile, graphtitle, threshold):
     plot_lines(sizes, epsilons, significance, outfile, threshold, graphtitle)
     return 
 
+def pvals_significance_allow_truncated_lines(infile, outfile, graphtitle, threshold):
+#input: csv file, outfile name (.png), graphtitle, and threshold for significant pvals
+#output: graph of infile data
+    file_contents = open(infile, 'r')
+    reader = csv.reader(file_contents)
+    epsilon_dict = {} # dictionary of (epsilon_val: size_dictionary) pairs, where each value is (size,pval_list).
+    for line in reader:
+        size = int(line[0])
+        epsilon = line[3]
+        pval = float(line[4])
+        if epsilon not in epsilon_dict:
+            epsilon_dict[epsilon] = {}
+        if size not in epsilon_dict[epsilon]:
+            epsilon_dict[epsilon][size] = []
+        epsilon_dict[epsilon][size].append(pval)
+    for epsilon in epsilon_dict:
+        for size in epsilon_dict[epsilon]:
+            num_runs = len(epsilon_dict[epsilon][size])
+            epsilon_dict[epsilon][size] = sum([x for x in epsilon_dict[epsilon][size] if x < threshold])/float(num_runs)
+
+    x_vals = []
+    y_vals = []
+    labels = []
+    for epsilon in epsilon_dict:
+        sizes = [key for key in epsilon_dict[epsilon].keys()]
+        sizes.sort()
+
+        values = [epsilon_dict[epsilon][size] for size in sizes]
+        print(epsilon)
+        for i in range(len(sizes)):
+            print(sizes[i],values[i])
+        x_vals.append(sizes)
+        y_vals.append(values)
+        labels.append(epsilon)
+
+    plot_lines_allow_truncated(x_vals,y_vals,labels, outfile, threshold, graphtitle)
+    return 
+
 ##ARCOMMENT
 import sys
 if __name__ == '__main__':
@@ -78,4 +141,5 @@ if __name__ == '__main__':
     outputfile = sys.argv[2]
     threshold = 0.05
     graphtitle = inputfile
-    pvals_significance(inputfile,outputfile,graphtitle,threshold)
+    pvals_significance_allow_truncated_lines(inputfile,outputfile,graphtitle,threshold)
+

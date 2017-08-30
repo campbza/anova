@@ -1,12 +1,12 @@
 import numpy as np
 
-def datagen(m1, m2, m3, v, n):
+def datagen(means_list, v, n):
 #input: 0.35, 0.5, 0.65, v = 0.15
 #output: 
-    data1 = np.array(np.random.normal(m1, v, n)).tolist()
-    data2 = np.array(np.random.normal(m2, v, n)).tolist()
-    data3 = np.array(np.random.normal(m3, v, n)).tolist()
-    data = [data1, data2, data3]
+    #ARCOMMENT: means_list can now be any size.
+    data = []
+    for mean in means_list:
+        data.append(np.array(np.random.normal(mean,v,n)).tolist())
     k = len(data)
     i = 0
     while i < k:
