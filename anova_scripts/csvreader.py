@@ -62,6 +62,9 @@ def pvals_significance(infile, outfile, graphtitle, threshold):
             epsilon_dict[e].append(pval_dict[(s,e)])
             if epsilon_dict[e] not in significance:
                 significance.append(epsilon_dict[e])
+    print(sizes)
+    print(epsilons)
+    print(significance)
     plot_lines(sizes, epsilons, significance, outfile, threshold, graphtitle)
     return 
 
