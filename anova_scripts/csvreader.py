@@ -1,6 +1,7 @@
 import csv
 import matplotlib.pyplot as plt
 import sys
+import os
 
 def plot_lines(sizes, eps_vals, significance, outfile, threshold, title):
     x_vals = sizes
@@ -28,6 +29,23 @@ def plot_lines(sizes, eps_vals, significance, outfile, threshold, title):
     return
 
 def plot_lines_allow_truncated(x_vals,y_vals,labels, outfile, threshold, title):
+    all_xvals = []
+    for x in x_vals:
+        all_xvals += x
+    all_xvals = list(set(all_xvals))
+    all_xvals.sort()
+
+    new_yvals = []
+    for i in range(len(y_vals)):
+        y = y_vals[i]
+        x = x_vals[i]
+        val_dict = {x[j]:y[j] for j in range(len(y))}
+        for x in all_xvals:
+            if x not in val_dict:
+                val_dict[x] = 1.0
+        x_vals[i] = all_xvals
+        y_vals[i] = [val_dict[s] for s in all_xvals]
+
     for i in range(len(labels)):
         if labels[i] == 'None':
             labels[i] = 'epsilon = $\infty$'
@@ -40,8 +58,13 @@ def plot_lines_allow_truncated(x_vals,y_vals,labels, outfile, threshold, title):
     for i in range(len(y_vals)):
         style_code = '-'+colors[i]+shapes[i]
         ax.plot(x_vals[i],y_vals[i],style_code,label=labels[i],lw=2,ms=8)
+        print(labels[i])
+        print('   n    proportion')
+        for j in range(len(x_vals[i])):
+            print('  ',x_vals[i][j],y_vals[i][j])
     ax.set_xscale('log')
     ax.set_xlim([0,max([max(x) for x in x_vals]) + 1])
+    ax.set_ylim([0,1.05])
     plt.title(title)
     plt.xlabel('Database size (log scale)')
     plt.ylabel('Percent significance at ' + str(threshold))
@@ -50,6 +73,8 @@ def plot_lines_allow_truncated(x_vals,y_vals,labels, outfile, threshold, title):
     plt.tight_layout()
     plt.savefig(outfile)
     print('Wrote to ' + outfile)
+    if 'pdf' in outfile:
+        os.system('pdfcrop %s %s' % (outfile,outfile))
     return
 
 def pvals_significance(infile, outfile, graphtitle, threshold):
@@ -88,9 +113,6 @@ def pvals_significance(infile, outfile, graphtitle, threshold):
             epsilon_dict[e].append(pval_dict[(s,e)])
             if epsilon_dict[e] not in significance:
                 significance.append(epsilon_dict[e])
-    print(sizes)
-    print(epsilons)
-    print(significance)
     plot_lines(sizes, epsilons, significance, outfile, threshold, graphtitle)
     return 
 
@@ -127,7 +149,6 @@ def pvals_significance_allow_truncated_lines(infile, outfile, graphtitle, thresh
     to_sort = [s for s in epsilon_keys if s != 'None']
     to_sort.sort(reverse=True)
     epsilon_keys = extra + [s for s in to_sort]
-    print(epsilon_keys)
 
     x_vals = []
     y_vals = []
@@ -137,9 +158,6 @@ def pvals_significance_allow_truncated_lines(infile, outfile, graphtitle, thresh
         sizes.sort()
 
         values = [epsilon_dict[epsilon][size] for size in sizes]
-        print('EPSILON',epsilon)
-        for i in range(len(sizes)):
-            print(sizes[i],values[i])
         x_vals.append(sizes)
         y_vals.append(values)
         labels.append(epsilon)
@@ -157,5 +175,6 @@ if __name__ == '__main__':
     outputfile = sys.argv[2]
     graphtitle = sys.argv[3]
     threshold = 0.05
+    print(graphtitle)
     pvals_significance_allow_truncated_lines(inputfile,outputfile,graphtitle,threshold)
 

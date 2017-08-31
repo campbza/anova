@@ -166,9 +166,11 @@ if __name__ == '__main__':
 
     num_runs = 1000
     epsilon_vals = [None,1,.5,.1,.01]
-    group_counts = []
-    for e in range(1,7):
-        group_counts += [10**e,int(10**(e+1)/2)]
+    #group_counts = []
+    #for e in range(1,7):
+    #    group_counts += [10**e,int(10**(e+1)/2)]
+    group_counts = [30,300,3000]
+    
 
     experiment = sys.argv[1].lower()
     if experiment == 'estimate':
@@ -176,7 +178,7 @@ if __name__ == '__main__':
         m2 = 0.5
         m3 = 0.65
         stddev = 0.15
-        filename = 'tmp.csv'
+        filename = 'tmp_estimate.csv'
         #filename = 'ARtest_estimate_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
         #    (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
         anova_test(num_runs,epsilon_vals,filename,[m1,m2,m3],stddev,group_counts,realvar=False)
@@ -185,13 +187,15 @@ if __name__ == '__main__':
         m2 = 0.5
         m3 = 0.65
         stddev = 0.15
-        filename = 'ARtest_realvar_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
-            (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
+        filename = 'tmp_realvar.csv'
+        #filename = 'ARtest_realvar_%druns_%.2fm1_%.2fm2_%.2fm3_%.2fvar_%depsilons_%dcounts.csv' % \
+        #    (num_runs,m1,m2,m3,stddev,len(epsilon_vals),len(group_counts))
         anova_test(num_runs,epsilon_vals,filename,[m1,m2,m3],stddev,group_counts,realvar=True)
     elif experiment == 'noisy':
         means_list = [0.5,0.5,0.5,0.6,0.4,0.43]
         stddev = 0.2
-        filename = 'ARtest_noisy_%druns_%dmeans_%.2fvar_%depsilons_%dcounts.csv' % \
-            (num_runs,len(means_list),stddev,len(epsilon_vals),len(group_counts))
+        filename = 'tmp_noisy.csv'
+        #filename = 'ARtest_noisy_%druns_%dmeans_%.2fvar_%depsilons_%dcounts.csv' % \
+        #    (num_runs,len(means_list),stddev,len(epsilon_vals),len(group_counts))
         anova_test(num_runs,epsilon_vals,filename,means_list,stddev,group_counts,realvar=False)
 

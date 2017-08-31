@@ -39,3 +39,25 @@ python3 csvreader.py ARtest_realvar_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsil
 
 python3 csvreader.py ARtest_noisy_1000runs_6means_0.20var_5epsilons_12counts.csv AR_noisy.png 'ANOVA with smaller effect size'
 ```
+
+## Adding additional points
+
+Rerun with different values of epsilon and/or group sizes. Let's call it tmp_estimate.csv.
+
+```
+cat ARtest_estimate_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_12counts.csv tmp_estimate.csv > ARtest_estimate_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_16counts.csv
+python3 csvreader.py ARtest_estimate_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_16counts.csv AR_estimate.pdf 'Differentially private ANOVA, MSE estimate of variance'
+
+cat ARtest_realvar_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_12counts.csv tmp_realvar.csv > ARtest_realvar_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_16counts.csv
+python3 csvreader.py ARtest_realvar_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_16counts.csv AR_realvar.pdf 'Differentially private ANOVA, ground truth variance'
+
+cat ARtest_noisy_1000runs_6means_0.20var_5epsilons_12counts.csv tmp_noisy.csv | awk -F"," '($4!=0.01){print $0}' > ARtest_noisy_1000runs_6means_0.20var_5epsilons_15counts.csv
+python3 csvreader.py ARtest_noisy_1000runs_6means_0.20var_5epsilons_15counts.csv AR_noisy.pdf 'ANOVA with smaller effect size'
+
+## Making a list of plotted values
+
+```
+python3 csvreader.py ARtest_estimate_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_16counts.csv AR_estimate.png 'Differentially private ANOVA, MSE estimate of variance' > plotted_values.txt
+python3 csvreader.py ARtest_realvar_1000runs_0.35m1_0.50m2_0.65m3_0.15var_5epsilons_16counts.csv AR_realvar.png 'Differentially private ANOVA, ground truth variance' >> plotted_values.txt
+python3 csvreader.py ARtest_noisy_1000runs_6means_0.20var_5epsilons_15counts.csv AR_noisy.png 'ANOVA with smaller effect size' >> plotted_values.txt
+```
